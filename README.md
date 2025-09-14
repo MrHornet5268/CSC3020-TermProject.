@@ -11,5 +11,8 @@ I chose this project because managing time effectively is one of the biggest cha
 Ean Mihuc  
 CSC 3020 – Modern Technologies  
 
+#Confluence Link
+https://my-team-yqji2ctp.atlassian.net/wiki/x/AYAY
+
 ## Setup Instructions
 *(This section will be updated in later milestones)*
