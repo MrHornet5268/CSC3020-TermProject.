@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for, abort
 
 app = Flask(__name__)
 
@@ -11,20 +11,23 @@ def home():
 
 @app.route("/add", methods=["POST"])
 def add_task():
-    title = request.form.get("title")
-    deadline = request.form.get("deadline")
+    title = (request.form.get("title") or "").strip()
+    deadline = (request.form.get("deadline") or "").strip()
 
-    if title and deadline:
+    if title:
         tasks.append({"title": title, "deadline": deadline})
+    return redirect(url_for("home"))
 
-    return redirect("/")
-
-@app.route("/delete/<int:index>")
+# Use POST for destructive actions to avoid accidental deletes via GET
+@app.route("/delete/<int:index>", methods=["POST"])
 def delete_task(index):
     if 0 <= index < len(tasks):
         tasks.pop(index)
-    return redirect("/")
+        return redirect(url_for("home"))
+    abort(404)
 
 if __name__ == "__main__":
+    # Development server (suitable for Docker during development).
+    # For production, run with gunicorn/uwsgi instead.
     app.run(host="0.0.0.0", port=5000)
 
