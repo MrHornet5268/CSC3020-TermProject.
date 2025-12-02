@@ -1,0 +1,32 @@
+from flask import Flask, render_template, request, redirect, url_for, abort
+
+app = Flask(__name__)
+
+# Temporary in-memory database (resets on restart)
+tasks = []
+
+@app.route("/")
+def home():
+    return render_template("index.html", tasks=tasks)
+
+@app.route("/add", methods=["POST"])
+def add_task():
+    title = (request.form.get("title") or "").strip()
+    deadline = (request.form.get("deadline") or "").strip()
+
+    if title:
+        tasks.append({"title": title, "deadline": deadline})
+    return redirect(url_for("home"))
+
+# Use POST for destructive actions to avoid accidental deletes via GET
+@app.route("/delete/<int:index>", methods=["POST"])
+def delete_task(index):
+    if 0 <= index < len(tasks):
+        tasks.pop(index)
+        return redirect(url_for("home"))
+    abort(404)
+
+if __name__ == "__main__":
+    # Development server (suitable for Docker during development).
+    # For production, run with gunicorn/uwsgi instead.
+    app.run(host="0.0.0.0", port=5000)
